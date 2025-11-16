@@ -1,4 +1,4 @@
-org: geraldocolchado
+org: arlethlapa
 service: api-comentario
 
 provider:
@@ -8,9 +8,10 @@ provider:
   memorySize: 1024
   timeout: 20
   iam:
-    role: arn:aws:iam::478701513931:role/LabRole	
+    role: arn:aws:iam::106429232912:role/LabRole	
   environment:
     TABLE_NAME: ${sls:stage}-t_comentarios
+    S3_INGEST_BUCKET: comentarios-ingesta-${sls:stage}   # 👈 bucket por stage
 
 functions:
   crear:
@@ -38,5 +39,9 @@ resources:
             KeyType: HASH
           - AttributeName: uuid
             KeyType: RANGE
-        # Set the capacity to auto-scale
         BillingMode: PAY_PER_REQUEST
+
+    BucketIngesta:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.S3_INGEST_BUCKET}
